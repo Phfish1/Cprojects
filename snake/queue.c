@@ -6,12 +6,14 @@ struct screenCoordinates {
   char y;
 } typedef screenCoordinates;
 
+// This tailQueue WILL Segfault if rear or front overflows or tailCoordinates overflows!
+
 // queue that holds current and previouses coordinates for snakeTail,
 // Should -1 and +1 for each tick the snake moves forward
 struct tailQueue {
   struct screenCoordinates tailCoordinates[1000];
-  char front;   // newest / Last item to be added
-  char rear;    // Index describing where in screenCoordinates array our last placed item is, eg(5), our queue has 6 items 0-5
+  int front;   // newest / Last item to be added
+  int rear;    // Index describing where in screenCoordinates array our last placed item is, eg(5), our queue has 6 items 0-5
 } typedef tailQueue;
 
 

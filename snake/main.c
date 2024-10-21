@@ -117,10 +117,8 @@ int isSnakeAlive(char screen[][SCREEN_HALF], snake *snakeHead) {
 void handleSnakeTail(char screen[][SCREEN_HALF], snake *snakeHead, tailQueue *queue) {
   screen[snakeHead->position.y][snakeHead->position.x] = SCREEN_SNAKE; // Add 1 to position of snake in array
 
-  // SOMETHING HERE CAUSING A SEG FAULT 🤭
-
   char snakeScreenPosition = screen[snakeHead->position.y][snakeHead->position.x];  // What is on the screen where snake is at
-  char rearQueue;
+  int rearQueue;
 
   // Add snake position to tailQueue
   enqueueTail(queue, snakeHead->position);
