@@ -1,0 +1,22 @@
+Draw screen with snake
+  As array:
+    0 == blank
+    1 == snakeHead
+    2 == snakeTail
+    3 == Food
+    8 == Wall
+  Draw snakeTail from snakeTailQueue
+
+
+Take Arrow input from user
+
+Move snakeHead in direction
+  Add last position to snakeTailQueue
+  Remove item from snakeTailQueue
+
+Draw fruit in random spot on Screen
+  IF snakeHead is on fruit
+    Add Matrix coordinates to snakeTailQueue
+
+If snakeHead is on screenEdge or on snakeTail
+Kill snake
