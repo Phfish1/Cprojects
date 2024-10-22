@@ -1,5 +1,8 @@
 #include <ncurses.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <locale.h>
+#include <time.h>
 
 #include "constants.h"
 #include "queue.c"
@@ -12,10 +15,10 @@ enum arrowDirection {
 };
 
 enum screenDetails {
-  BLANK = 0,
+  BLANK = 4,
   SCREEN_SNAKE = 1,
   SCREEN_SNAKE_TAIL = 2,
-  FOOD = 3,
+  FRUIT = 3,
   WALL = 8,
 };
 
@@ -32,52 +35,91 @@ char screen[SCREEN_HALF][SCREEN_HALF] = {{}};
 snake snakeHead;
 tailQueue queue;
 
+//
+
+int atScreenEdge(int y, int x) {
+  return (y == 0 || y == (SCREEN_HALF-1) || x == 0 || x == (SCREEN_HALF-1));
+}
+
+//
+
+
+// Brute forces a random location for the fruit!!! ( IF PLAYER REACHES FULL SNAKE, game will crash <3 )
+void spawnFruit(char screen[][SCREEN_HALF], int *fruitOnMap) {
+  char min = 0;
+  char max = SCREEN_HALF-1;
+
+  screenCoordinates fruitCoordinates;
+
+  // While fruit is not spawned, Creates random x and y for fruit position cordinates
+  while (1) {
+    fruitCoordinates.y = rand() % (max - min+1) + min;
+    fruitCoordinates.x = rand() % (max - min+1) + min;
+    
+    if (screen[fruitCoordinates.y][fruitCoordinates.x] == BLANK) {
+      break;   // Break's if fruit has spawned on a blank position
+    }
+
+    // MIGHT Add a check if there are any 0's still left on the screen, CHECKs for victory condition OR infinite loop <3
+
+    continue;
+  }
+
+  screen[fruitCoordinates.y][fruitCoordinates.x] = FRUIT;
+  *fruitOnMap = 1;
+
+}
+
 
 void drawScreen(char screen[][SCREEN_HALF]) {
   // Prints screen, for debugging
   for (int i = 0; i < SCREEN_HALF; i++) {
     for (int j = 0; j < SCREEN_HALF; j++) {
-      printw("%d, ", screen[i][j]);
+
+
+      // screen[i][j] Have values that coresponds to color_pairs {BLANK, WALL, SNAKE ... etc}
+      attron(COLOR_PAIR(screen[i][j]));   
+
+      printw("█");  // BLANK == █ □ " " ■
+    
+      attroff(COLOR_PAIR(screen[i][j]));
+
     }; printw("\n");
   };
 }
 
-void initializeScreen(char screen[][SCREEN_HALF]) {
+void initializeScreen(char screen[][SCREEN_HALF], int *fruitOnMap) {
   
   // Initializes screen for ncurses
-  initscr();
-  keypad(stdscr, true);
+  setlocale(LC_ALL, "");    // Sets locale to unicode
 
+  initscr();                // Initializes screen
+  keypad(stdscr, true);     // Makes arrow keys work
+
+  // Setts the colors of the items on screen
+  start_color();          // Initializes colors
+  use_default_colors();   // Makes color work
+    init_pair(BLANK, COLOR_BLACK, COLOR_BLACK);
+    init_pair(SCREEN_SNAKE, COLOR_GREEN, COLOR_GREEN);
+    init_pair(FRUIT, COLOR_RED, COLOR_RED);
+    init_pair(WALL, COLOR_WHITE, COLOR_WHITE);
 
   // Sets each screen edge pixel to 8 
   for (int y = 0; y < SCREEN_HALF; y++) {
     for (int x = 0; x < SCREEN_HALF; x++) {
       
-      // Draws walls if on screenEdges
-      switch (y) {            // Check IF y axis is on age
-        case (0):
-          screen[y][x] = 8;   // Set to 8 if on edge
-          break;
-        case (SCREEN_HALF-1):
-          screen[y][x] = 8;
-          break;
-        default:
-          break;
+      // Creates the top and bottom walls
+      // Fills the rest in Except SNAKE with BLANk
+      if (atScreenEdge(y, x)) {
+        screen[y][x] = WALL;
+      } else if (screen[y][x] != SCREEN_SNAKE){
+        screen[y][x] = BLANK;
       }
-      // Draws walls if on screenEdges
-      switch (x) {          // Check IF y axis is on age
-      case (0):
-        screen[y][x] = 8;   // Set to 8 if on edge
-        break;
-      case (SCREEN_HALF-1):
-        screen[y][x] = 8;     
-        break;
-      default:
-        break;
-      }
+
     }
   };
 
+  spawnFruit(screen, fruitOnMap);
   drawScreen(screen);
 }
 
@@ -107,18 +149,18 @@ int isSnakeAlive(char screen[][SCREEN_HALF], snake *snakeHead) {
   char snakeScreenPosition = screen[snakeHead->position.y][snakeHead->position.x];
 
   // Check if snake is at wall 
-  if (snakeScreenPosition == WALL) {
+  if (snakeScreenPosition == WALL || snakeScreenPosition == SCREEN_SNAKE) {
     return 0; 
   }
 
   return 1;
 }
  
-void handleSnakeTail(char screen[][SCREEN_HALF], snake *snakeHead, tailQueue *queue) {
+void handleSnakeTail(char screen[][SCREEN_HALF], snake *snakeHead, tailQueue *queue, int *fruitOnMap) {
   screen[snakeHead->position.y][snakeHead->position.x] = SCREEN_SNAKE; // Add 1 to position of snake in array
 
   char snakeScreenPosition = screen[snakeHead->position.y][snakeHead->position.x];  // What is on the screen where snake is at
-  int rearQueue;
+
 
   // Add snake position to tailQueue
   enqueueTail(queue, snakeHead->position);
@@ -145,6 +187,17 @@ void handleSnakeTail(char screen[][SCREEN_HALF], snake *snakeHead, tailQueue *qu
 
 }
 
+// Check if snake is on Fruit, IF so grow snake
+void growSnake(char screen[][SCREEN_HALF], snake *snakeHead, tailQueue *queue, int *fruitOnMap) {
+  char snakeScreenPosition = screen[snakeHead->position.y][snakeHead->position.x];  // What is on the screen where snake is at
+
+  if (snakeScreenPosition == FRUIT) {
+    enqueueTail(queue, snakeHead->position);
+    *fruitOnMap = 0;
+  }
+};
+
+
 snake initializeSnake(char screen[][SCREEN_HALF], snake *snakeHead) {
   snakeHead->alive = 1;
   snakeHead->tailLength = 0;
@@ -160,31 +213,47 @@ snake initializeSnake(char screen[][SCREEN_HALF], snake *snakeHead) {
 // CORE LOGIC
 int main(int argc, char ** argv) {
 
+  int fruitOnMap = 0;
+
   initializeSnake(screen, &snakeHead);
-  initializeScreen(screen);   // Initializes screen array with edges
+  initializeScreen(screen, &fruitOnMap);   // Initializes screen array and places fruit
   InitializeSnakeQueue(&queue, snakeHead.position);
+  
+
 
   int input;
-  while (1) {
-    // Takes input and clears it from the screen
-    input = getch();
-    clear();
+  int buffer;
 
+  input = getch();
+  nodelay(stdscr, TRUE);    // Makes getch() NOT interupt programflow
+
+  while (1) {
+    // When new direction is presses store it in input, else do nothing
+    if ((buffer = getch()) != ERR) {
+      input = buffer;
+    };
+
+    clear();  // Clears user input
     
     //
     // Core logic
     //
     
-    //generateFood();
-
     moveSnake(input, &snakeHead); // Moves snake's position values
 
     if (!isSnakeAlive(screen, &snakeHead)) { // Checks if snake move is valid or if snake died ;(
       break;
     };
 
-    handleSnakeTail(screen, &snakeHead, &queue);
 
+    growSnake(screen, &snakeHead, &queue, &fruitOnMap);
+
+    if (!fruitOnMap) {
+      spawnFruit(screen, &fruitOnMap); // Places fruit on screen and places 1 into fruitOnMap
+    }
+
+
+    handleSnakeTail(screen, &snakeHead, &queue, &fruitOnMap);
 
     //
     // Draws screen array
@@ -192,9 +261,10 @@ int main(int argc, char ** argv) {
     drawScreen(screen);
     refresh();
 
-    sleep(0.2); // Controls the tick speed
+    usleep(TICK_SPEED); // Controls the tick speed
   }
 
+  endwin();
 
 
   // Initializes screen, setup memory and clears screen
