@@ -28,7 +28,7 @@ struct snake {
 
 
 // Defines screen array
-char screen[SCREEN_HALF][SCREEN_HALF] = {{}};
+char screen[SCREEN_HALF][SCREEN_HALF];
 snake snakeHead;
 tailQueue queue;
 
@@ -52,29 +52,7 @@ void initializeScreen(char screen[][SCREEN_HALF]) {
   // Sets each screen edge pixel to 8 
   for (int y = 0; y < SCREEN_HALF; y++) {
     for (int x = 0; x < SCREEN_HALF; x++) {
-      
-      // Draws walls if on screenEdges
-      switch (y) {            // Check IF y axis is on age
-        case (0):
-          screen[y][x] = 8;   // Set to 8 if on edge
-          break;
-        case (SCREEN_HALF-1):
-          screen[y][x] = 8;
-          break;
-        default:
-          break;
-      }
-      // Draws walls if on screenEdges
-      switch (x) {          // Check IF y axis is on age
-      case (0):
-        screen[y][x] = 8;   // Set to 8 if on edge
-        break;
-      case (SCREEN_HALF-1):
-        screen[y][x] = 8;     
-        break;
-      default:
-        break;
-      }
+      if ((x == 0 || x == SCREEN_HALF - 1) || (y == 0 || y == SCREEN_HALF - 1)) screen[y][x] = 8;
     }
   };
 

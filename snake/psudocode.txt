@@ -20,3 +20,9 @@ Draw fruit in random spot on Screen
 
 If snakeHead is on screenEdge or on snakeTail
 Kill snake
+
+
+
+if Philip.is(Alive) {
+  Philip.commit(Suicide);
+}
