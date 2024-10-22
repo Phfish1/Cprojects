@@ -161,29 +161,14 @@ void handleSnakeTail(char screen[][SCREEN_HALF], snake *snakeHead, tailQueue *qu
 
   char snakeScreenPosition = screen[snakeHead->position.y][snakeHead->position.x];  // What is on the screen where snake is at
 
-
   // Add snake position to tailQueue
   enqueueTail(queue, snakeHead->position);
-
-
-  // Do something like FOR each snake length draw queue->rear+i to draw SNAKE_TAIL
 
   // Makes last index snake was on BLANK / 0
   screen[queue->tailCoordinates[queue->rear].y][queue->tailCoordinates[queue->rear].x] = BLANK;
 
-
-  //printw("last snake cords: (y) %d, (x) %d \n", queue->tailCoordinates[queue->rear].y, queue->tailCoordinates[queue->rear].x);
-
-  // Remove snakeTail from queue
+  // Remove last snakeTail position from queue
   dequeueTail(queue);
-
-
-  // Loops trought each tail pixel on the snake
-  // for (int i = 0; i < queue.front+1; i++) {
-    
-  // }
-
-  // Removes last bit of tail from screen
 
 }
 
@@ -192,7 +177,7 @@ void growSnake(char screen[][SCREEN_HALF], snake *snakeHead, tailQueue *queue, i
   char snakeScreenPosition = screen[snakeHead->position.y][snakeHead->position.x];  // What is on the screen where snake is at
 
   if (snakeScreenPosition == FRUIT) {
-    enqueueTail(queue, snakeHead->position);
+    queue->rear--;      // This is HUGE, just say NO to dequeuing last snake coord <3 Send love to snake <3
     *fruitOnMap = 0;
   }
 };
