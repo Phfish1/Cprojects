@@ -251,39 +251,4 @@ int main(int argc, char ** argv) {
 
   endwin();
 
-
-  // Initializes screen, setup memory and clears screen
-
 }
-
-
-
-
-  // initscr();
-  // int y, x;
-
-
-  // // Ask user to initialize game sequence:
-  // printw("Write something: ");
-
-  // // While input is not == "q", Continue the game loop
-  // int gameOn = 1;
-  // int input;
-  // while((input=getch()) != 113 && gameOn) {
-  //   // CORE GAME LOGIC
-  //   clear();
-
-  //   getmaxyx(stdscr, y, x);
-
-  //   // Write section
-  //   move(y/2, x/2);
-  //   printw("Keycode: %d, and character: %c", input, input);
-  //   move(0, 0);
-  //   printw("Write something: ");
-  // }
-
-  // // Stops and wait's for character input
-  // clear();
-  // endwin();
-
-  // printf("You have exited the game");
