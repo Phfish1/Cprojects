@@ -1,0 +1,75 @@
+#include<stdlib.h>
+#include<stdio.h>
+
+
+// strTable's indexes are "mapped" to vTable's indexes
+//      If you ask for the value "name", you will lookup the index of "name" in strTable
+//      Then using that index you get a jsonValue in the vTable.
+
+// "Data": {
+//      "name": "Philip",
+//      "age": 20,
+//      "likes": {
+//          "newtorking",
+//          "programing",
+//      }
+//
+
+// "vTable": {
+//      (jsonValue*), // { type = char*, value = char* -> P.... (Philip) }
+//      (jsonValue*), // { type = int, value = int -> 20 }
+//      (jsonValue*)  // { type = jsonValue, value = jsonValue* -> {
+//                                                                      type = char*, value = char* -> Newtorking, 
+//                                                                      type = char*, value = char* -> Programing
+//                                                                  } 
+//                      }
+
+// "strTable" (BASE): {
+//      (char*)name,
+//      (char*)age,
+//      (char*)likes
+//
+
+
+enum JsonTypes { JsonValueType, IntValue, StrValue };
+
+typedef struct {
+    int type;
+    void *value;
+    
+} JsonValue;
+
+typedef struct {
+    int len;
+
+    char* strTable;
+    void* vTable;
+
+} Map;
+
+
+void addToObject(Map* object, char* key, JsonValue value) {
+    object->len += 1;
+    
+
+    return;
+}
+
+Map* createMap() {
+    Map *object = (Map*)malloc(sizeof(Map));
+}
+
+int main() {
+    Map* object;
+
+    char key[10] = "name";
+    JsonValue value = {
+        StrValue,
+        "Philip"
+    };
+
+    //addToObject(object, key, value); 
+
+    //printf("Test: %d\n", new.type);
+    return 0;
+}

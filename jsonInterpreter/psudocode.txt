@@ -1,0 +1,4 @@
+Goal of the program:
+- Take in JSON Data and convert it to an Array of structs
+
+

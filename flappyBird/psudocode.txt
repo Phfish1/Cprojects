@@ -1,0 +1,24 @@
+Draw screen
+Draw bird in middle of screen
+Make bird fall down on screen
+  IF Space is pressed jump bird
+
+Draw pipes
+move pipes to left
+IF bird hits pipe end game
+
+
+### Design ###
+The bird only needs to move up and down
+While the pipes move
+
+The screen is represented as an int array.
+  Take the middle of the screen, and call it the BIRDS ROW
+  This row is where the bird will move up and down
+
+
+### Array Screen ###
+  BLANK : 1
+  BIRD  : 2
+  PIPE  : 3
+
