@@ -62,16 +62,19 @@ Map* createMap() {
 
 void addToObject(Map* object, char* key, int valueType, void* value) {
 
+    //
     // Allocate for the KEY and place it in strTable
+    //
     int keyLen = 0;
     while (key[keyLen] != '\0') {
         keyLen += 1;
     }
     object->strTable[object->len] = (char*)malloc(sizeof(char)*keyLen);
     object->strTable[object->len] = key;
-    // THIS WILL BREAK!!! seg-fault ah incoming (UNLESS???)
 
+    //
     // Allocate for JsonValue in vTavle pointer
+    // 
     object->vTable[object->len] = (JsonValue*)malloc(sizeof(JsonValue));
 
     // Check for valueTypes and allocate apropriatly
@@ -95,15 +98,9 @@ void addToObject(Map* object, char* key, int valueType, void* value) {
 
         (char*)object->vTable[object->len]->value;
     }
-    
 
-    printf("Type: %s\n", (char*)object->vTable[object->len]->value); 
-    //object->vTable[object->len] = value;
-
-
-    // Need to allocate for pointers ah in vTable and strTable
+    // Allocate pointers and increment ah
     object->len += 1; // Represents how many there are. 2 = 2 JsonValue's
-    printf("Len: %d\n", object->len); 
 
     // Pray realloc does not fail
     JsonValue** jvTmp = realloc(object->vTable, sizeof(JsonValue*) * object->len+1);
@@ -114,6 +111,18 @@ void addToObject(Map* object, char* key, int valueType, void* value) {
 
     return;
 }
+
+// YOU CANNOT REMOVE ITEMS, not allowed :)
+
+// Hashmap? fk tht shet ah
+int getObjIndex(char** strTable, char* key) {
+    // Go trough each entry in strTable
+    //      compare it to key,
+    //      return key_index (i) or exit(1) KYS trow in a sysfault to, mafaka cant even type
+    //
+    return 0;
+}
+
 
 int main() {
     Map* object = createMap();
@@ -132,9 +141,11 @@ int main() {
     addToObject(object, key1, StrType, v); 
     addToObject(object, key2, IntType, &v2); 
 
+    printf("INDEX-0: %s\n", object->strTable[0]);
+    printf("INDEX-1: %s\n", object->strTable[1]);
+
     printf("IT OwO Works: %s\n", (char*)object->vTable[0]->value); 
     printf("IT OwO Works: %d\n", *(int*)object->vTable[1]->value); 
-    //printf("IT OwO Works: %d\n", (int*)object->vTable[1]->value); 
 
     free(object);
     //printf("Test: %d\n", new.type);
